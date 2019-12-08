@@ -38,7 +38,6 @@ namespace IncidentProcessing
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
         ILogger log)
         {
-            log.LogInformation("GetCaseData triggered", (string)null);
             bool bRet = true;
             string content;
 
