@@ -30,8 +30,8 @@ namespace IncidentProcessing
                 int iStart = requestBody.IndexOf("State") + 6;
                 int iEnd = requestBody.IndexOf("Status");
 
-                string state = requestBody.Substring(iStart, iEnd - iStart);
-                string status = requestBody.Substring(iEnd + 7);
+                string state = requestBody.Substring(iStart, iEnd - iStart).Trim();
+                string status = requestBody.Substring(iEnd + 7).Trim();
 
                 content = JsonConvert.SerializeObject((object)new GetVSTSState.VSTSCaseState()
                 {
@@ -58,7 +58,7 @@ namespace IncidentProcessing
        
         public static String RemoveHtml( string input)
         {
-            String output = JsonConvert.SerializeObject((object)Regex.Replace(input, "<.*?>", string.Empty).Replace("\\r\\n", " ").Replace("&nbsp;", " "));
+            String output = Regex.Replace(input, "\r", " ").Replace("\n", " ").Replace(" <.*?>", string.Empty).Replace("&nbsp;", " ");
 
             return output;
         }
