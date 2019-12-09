@@ -28,7 +28,7 @@ namespace IncidentProcessing
 
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
-                VSTSCase = VSTSCase ?? data?.name;
+                VSTSCase = VSTSCase ?? data?.VSTSCaseNumber;
 
                 string temp = VSTSCase.Substring(VSTSCase.IndexOf("VSTS#") + 5);
                 VSTSCase = temp.Substring(0, temp.IndexOf(" "));
@@ -40,7 +40,7 @@ namespace IncidentProcessing
             }
             catch (Exception ex)
             {
-                content = string.Format("Please pass a valid email template in the request body: {0}", ex.Message);
+                content = string.Format("Please pass a valid email template in the request body: {0}-", ex.Message);
                 bRet = false;
             }
             return bRet ? (ActionResult)new JsonResult(content) : new BadRequestObjectResult(content);
