@@ -58,8 +58,10 @@ namespace IncidentProcessing
        
         public static String RemoveHtml( string input)
         {
-            String output = Regex.Replace(input, "\r", " ").Replace("\n", " ").Replace(" <.*?>", string.Empty).Replace("&nbsp;", " ");
-
+            String output = Regex.Replace( input, @"<.*?>", " ");
+            output = Regex.Replace(output, "&nbsp;", " ");
+            output = Regex.Replace(output, @"\\r", string.Empty);
+            output = Regex.Replace(output, @"\\n", string.Empty);
             return output;
         }
     
