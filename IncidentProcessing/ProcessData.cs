@@ -8,11 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace IncidentProcessing
 {
