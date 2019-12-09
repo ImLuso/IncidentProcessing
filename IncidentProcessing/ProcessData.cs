@@ -20,7 +20,7 @@ namespace IncidentProcessing
         ILogger log)
         {
             bool bRet = true;
-            string content;
+            string content; 
 
             try
             {
