@@ -14,21 +14,6 @@ namespace IncidentProcessing
 {
     public static class ProcessData
    {
-        /*
-        [FunctionName("RemoveHTML")]
-        public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-        ILogger log)
-        {
-            log.LogInformation("RemoveHTML triggered", (string)null);
-
-            string content = JsonConvert.SerializeObject((object)Regex.Replace(await req.ReadAsStringAsync(), "<.*?>", string.Empty).Replace("\\r\\n", " ").Replace("&nbsp;", " "))
-
-            return content != null
-            ? (ActionResult)new OkObjectResult(new StringContent(content, Encoding.UTF8, "application/json"))
-            : new BadRequestObjectResult("Please pass a valid email template in the request body");
-        }*/
- 
         [FunctionName("GetCaseData")]
         public static async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,

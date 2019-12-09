@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace IncidentProcessing
@@ -23,7 +24,9 @@ namespace IncidentProcessing
 
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();       
+                requestBody = RemoveHtml(requestBody);
+                
                 int iStart = requestBody.IndexOf("State") + 6;
                 int iEnd = requestBody.IndexOf("Status");
 
@@ -52,5 +55,13 @@ namespace IncidentProcessing
             [DataMember]
             public string status;
         }
+       
+        public static String RemoveHtml( string input)
+        {
+            String output = JsonConvert.SerializeObject((object)Regex.Replace(input, "<.*?>", string.Empty).Replace("\\r\\n", " ").Replace("&nbsp;", " "));
+
+            return output;
+        }
+    
     }
 }
