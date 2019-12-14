@@ -7,25 +7,22 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace IncidentProcessing
 {
-    public static class ADOStatusChanged
+    public static class ADOHistoryChanged
     {
-        [FunctionName("ADOStatusChanged")]
+        [FunctionName("ADOHistoryChanged")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-			string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-			//Rootobject ro = JsonConvert.DeserializeObject<Rootobject>(requestBody);
-			
-			int i = 1;
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+			//Rootobject ro = new Rootobject();
+			//ro = (Rootobject)JsonConvert.DeserializeObject(requestBody);
+       
+			string name = null;
 			/*
-			string history = data?.Status;
-
 			try
 			{
 				var personalaccesstoken = "pljc56ash6y54dkojtrpsxs2medr7b5uhi3oqd7atqs3tytyhpoq";
@@ -54,9 +51,11 @@ namespace IncidentProcessing
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.ToString());
-			}
-			*/
-			return (ActionResult)new OkObjectResult($"Hello");
+			}*/
+
+            return name != null
+                ? (ActionResult)new OkObjectResult($"Hello, {name}")
+                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace IncidentProcessing
    {
         [FunctionName("GetCaseData")]
         public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
         ILogger log)
         {
             bool bRet = true;
@@ -24,10 +24,10 @@ namespace IncidentProcessing
 
             try
             {
-                string str1 = req.Query["emailbody"];
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
-                str1 = str1 ?? data?.name;
+                string str1 = Helpers.RemoveHtml(requestBody);
+                //dynamic data = JsonConvert.DeserializeObject(requestBody);
+                //string str1 = data.ToString();
 
                 string lower = str1.ToLower();
                 List<string> stringList = new List<string>();
@@ -86,7 +86,7 @@ namespace IncidentProcessing
                 int startIndex5 = str6.IndexOf(":") + 1;
                 string str7 = str6.Substring(startIndex5).Trim();
                 int num4 = str7.IndexOf("\\");
-                stringList.Add(str7.Substring(0, num4 - 1).Trim());
+                stringList.Add(str7.Substring(0, num4).Trim());
                 content = JsonConvert.SerializeObject((object)new ProcessData.VSTSElement()
                 {
                     title = stringList[0],
