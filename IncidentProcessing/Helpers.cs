@@ -9,10 +9,12 @@ namespace IncidentProcessing
     {
         public static String RemoveHtml(string input)
         {
-            String output = Regex.Replace(input, @"<.*?>", " ");
-            output = Regex.Replace(output, "&nbsp;", " ");
+            String output = Regex.Replace(input,@"<.*?>", string.Empty);
+            output = Regex.Replace(output, "&nbsp;", string.Empty);
             output = Regex.Replace(output, @"\r", string.Empty);
+            output = Regex.Replace(output, @"\\r", string.Empty);
             output = Regex.Replace(output, @"\n", string.Empty);
+            output = Regex.Replace(output, @"\\n", string.Empty);
             return output;
         }
     }
