@@ -35,6 +35,7 @@ namespace IncidentProcessing
                 int startIndex1 = lower.IndexOf("title:");
                 int num2 = lower.IndexOf("description:");
 
+                // Title
                 string str2;
                 if (num2 != -1)
                 {
@@ -47,6 +48,7 @@ namespace IncidentProcessing
                     bRet = false;
                 }
 
+                // Description
                 stringList.Add(str2);
                 int startIndex2 = num2 >= 0 ? num2 : 0;
                 int num3 = lower.IndexOf("module:");
@@ -62,6 +64,7 @@ namespace IncidentProcessing
                     bRet = false;
                 }
 
+                // Module
                 stringList.Add(str4);
                 string str5;
                 if (num3 != -1)
@@ -79,14 +82,14 @@ namespace IncidentProcessing
                     bRet = false;
                 }
 
+                // Severity
                 stringList.Add(str5);
                 num1 = num3 >= 0 ? num3 : 0;
                 int startIndex4 = lower.IndexOf("severity:");
                 string str6 = str1.Substring(startIndex4);
                 int startIndex5 = str6.IndexOf(":") + 1;
                 string str7 = str6.Substring(startIndex5).Trim();
-                int num4 = str7.IndexOf("\\");
-                stringList.Add(str7.Substring(0, num4).Trim());
+                stringList.Add(str7.Substring(0, 1));
                 content = JsonConvert.SerializeObject((object)new ProcessData.VSTSElement()
                 {
                     title = stringList[0],
