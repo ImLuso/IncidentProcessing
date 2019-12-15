@@ -30,7 +30,9 @@ namespace IncidentProcessing
                 VSTSCase = VSTSCase ?? data?.VSTSCaseNumber;
 
                 string temp = VSTSCase.Substring(VSTSCase.IndexOf("VSTS#") + 5);
-                VSTSCase = temp.Substring(0, temp.IndexOf(" "));
+                int endPos = temp.IndexOf(" ");
+                endPos = endPos == -1 ? 5 : endPos;  
+                VSTSCase = temp.Substring(0, endPos);
 
                 content = JsonConvert.SerializeObject((object)new GetVSTSCaseNumber.VSTSNumber()
                 {
