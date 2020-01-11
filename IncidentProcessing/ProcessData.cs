@@ -9,9 +9,20 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace IncidentProcessing
 {
+    public class errData
+    {
+        public bool hasErrors;
+        public Dictionary<string, bool> errModules; 
+        public errData()
+        {
+            hasErrors = false;
+            errModules = new Dictionary<string, bool>();
+        }
+    }
     public static class ProcessData
    {
         [FunctionName("GetCaseData")]
@@ -19,88 +30,80 @@ namespace IncidentProcessing
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
         ILogger log)
         {
+ 
             bool bRet = true;
-            string content; 
-
+            string content = String.Empty;
             try
             {
+                errData errData = new errData();
+
+                VSTSElement VSTSElement = new VSTSElement();
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                string str1 = Helpers.RemoveHtml(requestBody);
-                //dynamic data = JsonConvert.DeserializeObject(requestBody);
-                //string str1 = data.ToString();
 
-                string lower = str1.ToLower();
+                const string SEP = "§§";
+                string[] tags = new string[] { "title:", "description:", "module:", "severity:"};
+                string temp;
+                string errModule = string.Empty;
+                List<string> tagContent = new List<string>();
+
+                EmailData eData = JsonConvert.DeserializeObject<EmailData>(requestBody);
+                string body = Helpers.RemoveHtml(eData.emailbody).ToLower();
                 List<string> stringList = new List<string>();
-                int num1 = 0;
-                int startIndex1 = lower.IndexOf("title:");
-                int num2 = lower.IndexOf("description:");
 
-                // Title
-                string str2;
-                if (num2 != -1)
+                //Verify all the required items are specified
+                foreach (string item in tags)
                 {
-                    string str3 = str1.Substring(startIndex1, num2 - startIndex1);
-                    str2 = str3.Substring(str3.IndexOf(":") + 1).Trim();
+                    if (body.IndexOf(item) == -1)
+                    {
+                        errData.hasErrors = true;
+                        errData.errModules.Add(item, true);
+                    }
+                    else
+                    {
+                        errData.errModules.Add(item, false);
+                        temp = body.Replace(item, SEP + item);
+                        body = temp;
+                    }
+                }
+
+                if (!errData.hasErrors)
+                {
+                    // Split all the elements into strings
+                    string[] split = body.Split(SEP, StringSplitOptions.None);
+
+                    // Generate response
+                    foreach (string item in split)
+                    {
+                        if (item != String.Empty)
+                        {
+                            string[] tagsSplitted = item.Split(":", StringSplitOptions.None);
+                            switch (tagsSplitted[0])
+                            {
+                                case "title":
+                                    VSTSElement.title = tagsSplitted[1]; break;
+                                case "description":
+                                    VSTSElement.description = tagsSplitted[1]; break;
+                                case "module":
+                                    VSTSElement.module = tagsSplitted[1]; break;
+                                case "severity":
+                                    VSTSElement.severity = Convert.ToInt32(tagsSplitted[1]); break;
+                            }
+                        }
+                    }
+                    content = JsonConvert.SerializeObject(VSTSElement);
                 }
                 else
                 {
-                    str2 = "Incorrect Title";
-                    bRet = false;
+                    content = "Required tags not specified: ";
+                    foreach (var item in errData.errModules)
+                    {
+                        content += (item.Value ? item.Key : "") + " ";
+                    }
                 }
-
-                // Description
-                stringList.Add(str2);
-                int startIndex2 = num2 >= 0 ? num2 : 0;
-                int num3 = lower.IndexOf("module:");
-                string str4;
-                if (num3 != -1)
-                {
-                    string str3 = str1.Substring(startIndex2, num3 - startIndex2);
-                    str4 = str3.Substring(str3.IndexOf(":") + 1).Trim();
-                }
-                else
-                {
-                    str4 = "Incorrect Description";
-                    bRet = false;
-                }
-
-                // Module
-                stringList.Add(str4);
-                string str5;
-                if (num3 != -1)
-                {
-                    int startIndex3 = num3;
-                    num3 = lower.IndexOf("case type:");
-                    string str3 = str1.Substring(startIndex3, num3 - startIndex3).Trim();
-                    str5 = str3.Substring(str3.IndexOf(":") + 1);
-                    if (str5.ToUpper() != "CRM" && str5 != "datainsights" && str5 != "modernapps")
-                        str5 = "ModernApps";
-                }
-                else
-                {
-                    str5 = "ModernApps";
-                    bRet = false;
-                }
-
-                // Severity
-                stringList.Add(str5);
-                num1 = num3 >= 0 ? num3 : 0;
-                int startIndex4 = lower.IndexOf("severity:");
-                string str6 = str1.Substring(startIndex4);
-                int startIndex5 = str6.IndexOf(":") + 1;
-                string str7 = str6.Substring(startIndex5).Trim();
-                stringList.Add(str7.Substring(0, 1));
-                content = JsonConvert.SerializeObject((object)new ProcessData.VSTSElement()
-                {
-                    title = stringList[0],
-                    description = stringList[1],
-                    module = stringList[2],
-                    severity = Convert.ToInt32(stringList[3])
-                });
             }
-            catch( Exception ex)
+            catch (Exception ex)
             {
-                content = string.Format("Please pass a valid email template in the request body: {0}",ex.Message);
+                content = string.Format(" - ERROR MESSAGE: {0} - {1}", ex.Message, ex.StackTrace);
                 bRet = false;
             }
             return bRet? (ActionResult)new JsonResult(content): new BadRequestObjectResult(content);
@@ -117,6 +120,14 @@ namespace IncidentProcessing
             public string module;
             [DataMember]
             public int severity;
+        }
+
+
+        [DataContract]
+        private class EmailData
+        {
+            [DataMember]
+            public string emailbody;
         }
     }
 }
