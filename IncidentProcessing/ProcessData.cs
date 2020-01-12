@@ -41,7 +41,7 @@ namespace IncidentProcessing
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
                 const string SEP = "§§";
-                string[] tags = new string[] { "title:", "description:", "module:", "severity:"};
+                string[] tags = new string[] { "title:", "description:", "module:", "severity:", "case type:"};
                 string temp;
                 string errModule = string.Empty;
                 List<string> tagContent = new List<string>();
@@ -82,9 +82,9 @@ namespace IncidentProcessing
                                 case "title":
                                     VSTSElement.title = tagsSplitted[1]; break;
                                 case "description":
-                                    VSTSElement.description = tagsSplitted[1]; break;
+                                    VSTSElement.description = tagsSplitted[1]; break; 
                                 case "module":
-                                    VSTSElement.module = tagsSplitted[1]; break;
+                                    VSTSElement.module = tagsSplitted[1].Trim() == "datainsights" ? "DataInsights" : "ModernApps"; break;
                                 case "severity":
                                     VSTSElement.severity = Convert.ToInt32(tagsSplitted[1]); break;
                             }
