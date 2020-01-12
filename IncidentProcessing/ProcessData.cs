@@ -94,6 +94,7 @@ namespace IncidentProcessing
                 }
                 else
                 {
+                    bRet = false;
                     content = "Required tags not specified: ";
                     foreach (var item in errData.errModules)
                     {
