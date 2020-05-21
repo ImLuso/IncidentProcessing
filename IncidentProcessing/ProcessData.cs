@@ -50,7 +50,7 @@ namespace IncidentProcessing
                 string body = Helpers.RemoveHtml(eData.emailbody).ToLower();
                 List<string> stringList = new List<string>();
 
-                //Verify all the required items are specified
+                //Verify all the required items are specified correctly. Otherwise generate error
                 foreach (string item in tags)
                 {
                     if (body.IndexOf(item) == -1)
